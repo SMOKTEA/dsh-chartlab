@@ -4,7 +4,7 @@
 
 **数据 → 可交互图表实验室 · DeepSeek Harness 插件**
 
-把本地数据文件（`.csv` / `.xlsx` / `.xls`）或 DuckDB 数据库变成可缩放、可筛选、可分组的交互图表 —— 支持百万行数据。
+把本地数据文件（`.csv` / `.xlsx` / `.xls`）或 DuckDB 数据库变成可缩放、可筛选、可分组的交互图表
 
 <p align="center">
   <a href="https://github.com/SMOKTEA/dsh-chartlab/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/SMOKTEA/dsh-chartlab?logo=github"></a>
@@ -15,12 +15,14 @@
 
 </div>
 
+> English：[README_EN.md](README_EN.md)
+
 ---
 
 一句话：**让 Agent 帮你把数据变成一张可交互的图表。**
 
 - **三种数据源** —— 本地数据文件（`.csv` / `.xlsx` / `.xls`）、或 DuckDB 数据库（`.duckdb` / `.ddb`）里的表，说句话就能出图。
-- **百万行也不卡** —— 数据留在后台，图表只按当前可视范围取数，百万行数据缩放平移也流畅。
+- **支持百万行数据** —— 数据留在后台，图表只按当前可视范围取数，百万行数据缩放平移也流畅。
 - **完整图表工作台** —— 折线 / 散点；框选缩放、滚轮缩放、拖拽平移、悬浮读数。
 - **筛选 · 分组 · SQL** —— 条件筛选、按列分组画多条线，也可以直接写 SQL 查询。
 - **原生观感** —— 自动跟随 DSH 的语言（中 / 英）与主题（深 / 浅），切换无需刷新。
@@ -49,11 +51,8 @@
 ## 🚀 快速开始
 
 ```powershell
-# 安装（把 <profile> 换成你自己的 profile 名，例如 dev）
-dsh plugin --profile <profile> add dsh-chartlab
+dsh plugin --profile web add dsh-chartlab
 
-# 启动该 profile 的 Web UI
-dsh --profile <profile>
 ```
 
 然后在聊天里直接说：
