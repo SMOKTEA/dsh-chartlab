@@ -30,7 +30,7 @@ Turn local CSV, Excel (`.xlsx` / `.xls`), or DuckDB databases into zoomable, fil
 One line: **let the agent turn your data into a zoomable, filterable, groupable interactive chart.**
 
 - **Three data sources** — a local CSV file, an Excel workbook (`.xlsx` / `.xls`), or a table inside a DuckDB database (`.duckdb` / `.ddb`). Just say it in chat.
-- **Fast on large data** — data stays on the host; the chart fetches only the visible window, so zooming and panning stay smooth.
+- **Fast on millions of rows** — data stays on the host; the chart fetches only the visible window, so zooming and panning stay smooth even at millions of rows.
 - **Full chart workbench** — line / scatter; box zoom, wheel zoom, drag-to-pan, hover readouts.
 - **Filter · Group · SQL** — conditional filters, group rows by a column into multiple lines, or write SQL directly.
 - **Native look & feel** — follows DSH's language (zh / en) and theme (dark / light) automatically, no reload needed.
