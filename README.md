@@ -49,11 +49,11 @@
 ## 🚀 快速开始
 
 ```powershell
-# 安装
-dsh plugin --profile dev add dsh-chartlab
+# 安装（把 <profile> 换成你自己的 profile 名，例如 dev）
+dsh plugin --profile <profile> add dsh-chartlab
 
-# 启动 dev profile 的 Web UI
-dsh --profile dev
+# 启动该 profile 的 Web UI
+dsh --profile <profile>
 ```
 
 然后在聊天里直接说：

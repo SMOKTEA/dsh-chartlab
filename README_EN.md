@@ -55,11 +55,11 @@ One line: **let the agent turn your data into a zoomable, filterable, groupable 
 ## 🚀 Quick Start
 
 ```powershell
-# Install
-dsh plugin --profile dev add dsh-chartlab
+# Install (replace <profile> with your own profile name, e.g. dev)
+dsh plugin --profile <profile> add dsh-chartlab
 
-# Start the dev profile's web UI
-dsh --profile dev
+# Start that profile's web UI
+dsh --profile <profile>
 ```
 
 Then just say in chat:
