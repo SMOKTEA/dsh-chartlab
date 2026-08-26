@@ -2,6 +2,8 @@
 
 # 📈 dsh-chartlab
 
+English | [简体中文](./README.md)
+
 **Data → Interactive Chart Lab · DeepSeek Harness plugin**
 
 Turn local CSV, Excel (`.xlsx` / `.xls`), or DuckDB databases into zoomable, filterable, groupable interactive charts — supports millions of rows.
@@ -18,8 +20,6 @@ Turn local CSV, Excel (`.xlsx` / `.xls`), or DuckDB databases into zoomable, fil
 <p align="center">
   <img src="assets/demo.jpeg" alt="dsh-chartlab demo" width="800">
 </p>
-
-> 中文文档：[README.md](README.md)
 
 [[_TOC_]]
 
@@ -78,6 +78,22 @@ Then just say in chat:
 npm install
 npm run build
 ```
+
+---
+
+## 🗺️ Roadmap
+
+| Status | Item | Notes |
+|---|---|---|
+| ✅ Done | CSV / Excel / DuckDB data sources | One-line interactive charts |
+| ✅ Done | Filters, group lines, SQL row filtering | In-chart UI |
+| 🚧 Planned | SQL aggregation & sorting | GROUP BY / ORDER BY / aggregate functions |
+| 🚧 Planned | SQL panel for Excel | SQL currently works only for CSV / DuckDB |
+| 🚧 Planned | Streaming Excel reads | Large xlsx currently loads fully & synchronously |
+| 🚧 Planned | Multiple Excel sheets | Currently reads the first sheet |
+| 💡 Idea | More data sources | Parquet / JSON, etc. |
+
+Issues and PRs welcome.
 
 ---
 

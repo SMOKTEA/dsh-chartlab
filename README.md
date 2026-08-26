@@ -2,6 +2,8 @@
 
 # 📈 dsh-chartlab
 
+[English](./README_EN.md) | 简体中文
+
 **数据 → 可交互图表实验室 · DeepSeek Harness 插件**
 
 把本地数据文件（`.csv` / `.xlsx` / `.xls`）或 DuckDB 数据库变成可缩放、可筛选、可分组的交互图表
@@ -14,8 +16,6 @@
 </p>
 
 </div>
-
-> English：[README_EN.md](README_EN.md)
 
 ---
 
@@ -62,6 +62,22 @@ dsh plugin --profile web add dsh-chartlab
 > **用 dsh-chartlab 插件绘制 `/path/to/your-data.xlsx` 的图表**
 >
 > **用 dsh-chartlab 插件绘制 `/path/to/your-data.duckdb` 中 `sales` 表的图表**（表名可省略，自动取第一张表）
+
+---
+
+## 🗺️ Roadmap
+
+| 状态 | 计划 | 说明 |
+|---|---|---|
+| ✅ 已支持 | CSV / Excel / DuckDB 数据源 | 一句话生成可交互图表 |
+| ✅ 已支持 | 筛选、分组多线、SQL 行筛选 | 图表页内直接操作 |
+| 🚧 计划中 | SQL 聚合与排序 | GROUP BY / ORDER BY / 聚合函数 |
+| 🚧 计划中 | Excel 的 SQL 面板 | 目前 SQL 仅支持 CSV / DuckDB |
+| 🚧 计划中 | Excel 流式读取 | 大 xlsx 目前同步全量加载 |
+| 🚧 计划中 | Excel 多工作表 | 目前读取第一个工作表 |
+| 💡 想法 | 更多数据源 | Parquet / JSON 等 |
+
+欢迎提 issue / PR。
 
 ---
 
