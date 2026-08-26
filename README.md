@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📊 dsh-chartlab
+# dsh-chartlab
 
 **CSV → 交互式图表实验台 · DeepSeek Harness 插件**
 
@@ -58,9 +58,7 @@ dsh --profile dev
 
 然后在聊天里直接说：
 
-> **画 /path/to/your-data.csv 的图**
-
-Agent 调用 `render_chart` 后，侧边栏会出现 `chartLab` 标签页（新图自动跳转），也可以点回复里的 `/dsh-chartlab/view/<chartId>` 链接打开独立图表页。
+> **用 dsh-chartlab 插件绘制 /path/to/your-data.csv 的图表**
 
 ---
 
