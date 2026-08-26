@@ -49,8 +49,8 @@
 ## 🚀 快速开始
 
 ```powershell
-# 安装（本地开发用 file: 路径；发布后用 npm 包名）
-dsh plugin --profile dev add file:/path/to/dsh-chartlab
+# 安装
+dsh plugin --profile dev add dsh-chartlab
 
 # 启动 dev profile 的 Web UI
 dsh --profile dev

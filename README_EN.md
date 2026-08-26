@@ -55,8 +55,8 @@ One line: **let the agent turn your data into a zoomable, filterable, groupable 
 ## 🚀 Quick Start
 
 ```powershell
-# Install (use a file: path for local development; use the npm package name after publishing)
-dsh plugin --profile dev add file:/path/to/dsh-chartlab
+# Install
+dsh plugin --profile dev add dsh-chartlab
 
 # Start the dev profile's web UI
 dsh --profile dev
