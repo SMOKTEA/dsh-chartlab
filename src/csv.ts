@@ -35,8 +35,8 @@ export interface ChartPayload {
   sample: Array<Record<string, string | number | null>>
   /** Absolute path of the source file (CSV or DuckDB database; set by the tool; used by the SQL engine). */
   path?: string
-  /** Source kind, set by the tool: 'csv' (default) or 'duckdb' (database file). */
-  sourceKind?: 'csv' | 'duckdb'
+  /** Source kind, set by the tool: 'csv' (default), 'duckdb' (database file) or 'excel' (.xlsx/.xls). */
+  sourceKind?: 'csv' | 'duckdb' | 'excel'
   /** Table name when sourceKind === 'duckdb'. */
   table?: string
   /** Owning session id (set by the tool; used to scope /dsh-chartlab/list per conversation). */

@@ -36,6 +36,7 @@ import {
   type AggKind,
 } from './csv.js'
 import { listDuckDbTables, readDuckDbTable } from './duckdb.js'
+import { readExcel } from './excel.js'
 import { putChart, getChart, listCharts, purgeSession } from './store.js'
 import { runSql } from './sql.js'
 import { viewPageHtml } from './view.js'
@@ -89,8 +90,8 @@ interface RenderChartArgs {
 interface ToolResult {
   chartId: string
   path: string
-  /** 'csv' | 'duckdb' — how the source file was read. */
-  source: 'csv' | 'duckdb'
+  /** 'csv' | 'duckdb' | 'excel' — how the source file was read. */
+  source: 'csv' | 'duckdb' | 'excel'
   /** Table name when source === 'duckdb'. */
   table?: string
   columns: Column[]
@@ -102,7 +103,7 @@ interface ToolResult {
 function renderText(value: ToolResult): string {
   const chart = getChart(value.chartId)
   const cols = value.columns.map((c) => `${c.name} (${c.type})`).join(', ')
-  const sourceDesc = value.source === 'duckdb' ? `DuckDB table \`${value.table}\`` : 'CSV file'
+  const sourceDesc = value.source === 'duckdb' ? `DuckDB table \`${value.table}\`` : value.source === 'excel' ? 'Excel sheet' : 'CSV file'
   const lines = [
     `Prepared chart \`${value.chartId}\` from ${sourceDesc} \`${value.path}\`.`,
     `- rows: ${value.rowCount}`,
@@ -239,6 +240,9 @@ async function dataHandler(request: IncomingMessage, response: ServerResponse): 
       const q = url.searchParams.get('q') ?? ''
       if (q.trim() === '') return sendJson(response, 400, { error: 'missing q' })
       if (!chart.path) return sendJson(response, 400, { error: 'chart has no source path' })
+      if (chart.sourceKind === 'excel') {
+        return sendJson(response, 400, { error: 'SQL query is only supported for CSV and DuckDB sources' })
+      }
       try {
         const source =
           chart.sourceKind === 'duckdb'
@@ -401,14 +405,14 @@ export function apply(ctx: HostContext): void {
   ctx.systemPrompt.section({
     name: 'tool:render_chart',
     order: 112,
-    text: 'Use the render_chart tool to turn a local data source into an interactive chart: a CSV file, or a table inside a DuckDB database (.duckdb / .ddb). Pass the file path (add the table name for DuckDB sources); the tool reads and profiles it and returns a chartId plus column metadata (it never loads the raw rows into context). Include the returned /dsh-chartlab/view/<chartId> link in your reply so the user can open the interactive chart window. The interactive chart page itself supports column selection (X/Y), row filtering and SQL; aggregation and grouping are not supported.',
+    text: 'Use the render_chart tool to turn a local data source into an interactive chart: a CSV file, an Excel workbook (.xlsx / .xls), or a table inside a DuckDB database (.duckdb / .ddb). Pass the file path (add the table name for DuckDB sources); the tool reads and profiles it and returns a chartId plus column metadata (it never loads the raw rows into context). Include the returned /dsh-chartlab/view/<chartId> link in your reply so the user can open the interactive chart window. The interactive chart page itself supports column selection (X/Y), row filtering and SQL; aggregation and grouping are not supported.',
   })
 
   ctx.tools.register(defineTool({
     name: 'render_chart',
-    description: 'Read a local CSV file or DuckDB database table and prepare it for interactive charting. Returns a chartId and column metadata, never the raw rows.',
+    description: 'Read a local CSV file, Excel workbook, or DuckDB database table and prepare it for interactive charting. Returns a chartId and column metadata, never the raw rows.',
     parameters: {
-      path: { type: 'string', required: true, description: 'Path to the data file: a CSV file, or a DuckDB database (.duckdb / .ddb).' },
+      path: { type: 'string', required: true, description: 'Path to the data file: a CSV file, an Excel workbook (.xlsx / .xls), or a DuckDB database (.duckdb / .ddb).' },
       table: { type: 'string', description: 'Table name when path is a DuckDB database. When omitted, the first table (by name) is used.' },
       x: { type: 'string', description: 'Optional column name to use as the x axis.' },
       y: { type: 'string', description: 'Optional column name to use as the y axis.' },
@@ -458,6 +462,7 @@ export function apply(ctx: HostContext): void {
     async execute(args: RenderChartArgs, exec?: { agent?: { session?: { id: string } } }): Promise<ToolResult> {
       const resolvedPath = resolve(args.path)
       const isDuckDb = /\.(duckdb|ddb)$/i.test(resolvedPath)
+      const isExcel = /\.(xlsx|xlsm|xlsb|xls)$/i.test(resolvedPath)
       let chart: ChartPayload
       if (isDuckDb) {
         const tables = await listDuckDbTables(resolvedPath)
@@ -466,6 +471,9 @@ export function apply(ctx: HostContext): void {
         chart = await readDuckDbTable(resolvedPath, table, { previewTarget: PREVIEW_TARGET })
         chart.sourceKind = 'duckdb'
         chart.table = table
+      } else if (isExcel) {
+        chart = await readExcel(resolvedPath, { previewTarget: PREVIEW_TARGET })
+        chart.sourceKind = 'excel'
       } else {
         chart = await readCsv(resolvedPath, { previewTarget: PREVIEW_TARGET })
         chart.sourceKind = 'csv'
@@ -479,7 +487,9 @@ export function apply(ctx: HostContext): void {
         chartId,
         path: resolvedPath,
         source: chart.sourceKind ?? 'csv',
-        table: chart.table,
+        // Only include `table` when it exists: a property whose value is
+        // `undefined` fails the host's lossless-JSON snapshot of tool output.
+        ...(chart.table !== undefined ? { table: chart.table } : {}),
         columns: chart.columns,
         rowCount: chart.rowCount,
         suggestedX: chart.suggestedX,

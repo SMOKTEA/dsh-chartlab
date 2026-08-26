@@ -48,7 +48,7 @@ export function validateSql(sql: string): string | null {
   return null
 }
 
-function convValue(v: unknown, type: Column['type']): number | string {
+export function convValue(v: unknown, type: Column['type']): number | string {
   if (v === null || v === undefined) return type === 'string' ? '' : Number.NaN
   if (typeof v === 'bigint') return Number(v)
   if (typeof v === 'boolean') return v ? 1 : 0

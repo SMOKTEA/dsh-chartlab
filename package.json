@@ -1,15 +1,18 @@
 {
   "name": "dsh-chartlab",
   "version": "0.0.1",
-  "description": "Data → interactive chart lab for DeepSeek Harness (CSV + DuckDB data sources): render_chart tool, binary data route, a self-contained interactive chart page, and a Chart tab in the web UI.",
+  "description": "Data → interactive chart lab for DeepSeek Harness: turn local CSV, Excel, or DuckDB data into zoomable, filterable, groupable interactive charts.",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "files": [
     "lib",
+    "vendor",
+    "assets",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "README_EN.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-client.mjs"

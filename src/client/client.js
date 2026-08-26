@@ -1,12 +1,11 @@
 // dsh-chartlab client bundle: registers a "图表" tab next to Chat / Trajectory.
 // Hand-written in the DSH __ModuleLoader__ format (no build step).
 // - ChartTab: pure chart display (composer hidden via CSS), embeds the latest
-//   chart of the CURRENT session.
-// - ChartSwitcher: when a NEW chart appears in the current session, auto-switch
-//   to the Chart tab.
-// Both are event-driven: they subscribe to the session's notifier and refresh
-// the chart list only when the session changes (a render_chart tool result
-// lands) — there are no polling timers.
+//   chart of the CURRENT session. The tab is manual — it never auto-switches the
+//   user's active view away from what they are doing.
+// Event-driven: it subscribes to the session's notifier and refreshes the chart
+// list only when the session changes (a render_chart tool result lands) — there
+// are no polling timers.
 window.__ModuleLoader__.load({
   id: "dsh-chartlab",
   factory: (require) => {
@@ -140,29 +139,6 @@ window.__ModuleLoader__.load({
       });
     }
 
-    // Invisible header-utility entry: when a NEW chart is created in the chat,
-    // auto-switch the active view to the Chart tab. Event-driven like ChartTab.
-    function ChartSwitcher(props) {
-      var actions = props.actions;
-      var store = props.chartStore;
-      var lastChart = React.useRef(null);
-      var latest = useChartStore(store);
-
-      React.useEffect(function () {
-        if (!latest) return;
-        if (lastChart.current !== null && latest !== lastChart.current) {
-          lastChart.current = latest;
-          setTimeout(function () {
-            if (actions && typeof actions.setView === "function") actions.setView("chart");
-          }, 400);
-        } else {
-          lastChart.current = latest;
-        }
-      }, [latest, actions]);
-
-      return null;
-    }
-
     // When a session is deleted: drop its chart-option caches from localStorage
     // and purge its charts from the host store (both layers of the session's
     // its dsh-chartlab state), so nothing orphaned survives the conversation.
@@ -225,23 +201,6 @@ window.__ModuleLoader__.load({
             return { sessionId: sessionId, chartStore: store, t: t };
           }
         }, ChartTab);
-      });
-
-      ctx.slots.inject("conversation.session.header.utilities", function () {
-        return ctx.slots.register({
-          name: "conversation.session.header.utilities",
-          id: "dsh-chartlab-switcher",
-          order: 100,
-          inject: function (sessionId) {
-            var store = createChartStore(sessionId, function () {
-              try {
-                var binding = ctx.sessions.binding(sessionId);
-                return binding && binding.session ? binding.session : null;
-              } catch (e) { return null; }
-            });
-            return { sessionId: sessionId, chartStore: store };
-          }
-        }, ChartSwitcher);
       });
     }
 
