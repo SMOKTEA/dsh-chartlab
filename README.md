@@ -71,8 +71,6 @@ dsh plugin --profile web add dsh-chartlab
 |---|---|---|
 | ✅ 已支持 | CSV / Excel / DuckDB 数据源 | 一句话生成可交互图表 |
 | ✅ 已支持 | 筛选、分组多线、SQL 行筛选 | 图表页内直接操作 |
-| 🚧 计划中 | SQL 聚合与排序 | GROUP BY / ORDER BY / 聚合函数 |
-| 🚧 计划中 | Excel 的 SQL 面板 | 目前 SQL 仅支持 CSV / DuckDB |
 | 🚧 计划中 | Excel 流式读取 | 大 xlsx 目前同步全量加载 |
 | 🚧 计划中 | Excel 多工作表 | 目前读取第一个工作表 |
 | 💡 想法 | 更多数据源 | Parquet / JSON 等 |
