@@ -4,7 +4,7 @@
 
 **Data → Interactive Chart Lab · DeepSeek Harness plugin**
 
-Turn local CSV, Excel (`.xlsx` / `.xls`), or DuckDB databases into zoomable, filterable, groupable interactive charts — smooth even on large data.
+Turn local CSV, Excel (`.xlsx` / `.xls`), or DuckDB databases into zoomable, filterable, groupable interactive charts — supports millions of rows.
 
 <p align="center">
   <a href="https://github.com/SMOKTEA/dsh-chartlab/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/SMOKTEA/dsh-chartlab?logo=github"></a>

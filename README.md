@@ -4,7 +4,7 @@
 
 **数据 → 可交互图表实验室 · DeepSeek Harness 插件**
 
-把本地数据文件（`.csv` / `.xlsx` / `.xls`）或 DuckDB 数据库变成可缩放、可筛选、可分组的交互图表 —— 数据量再大也不卡。
+把本地数据文件（`.csv` / `.xlsx` / `.xls`）或 DuckDB 数据库变成可缩放、可筛选、可分组的交互图表 —— 支持百万行数据。
 
 <p align="center">
   <a href="https://github.com/SMOKTEA/dsh-chartlab/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/SMOKTEA/dsh-chartlab?logo=github"></a>
