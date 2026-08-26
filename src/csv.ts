@@ -33,8 +33,12 @@ export interface ChartPayload {
   suggestedY: string
   preview: { x: number[]; y: number[] }
   sample: Array<Record<string, string | number | null>>
-  /** Absolute path of the source CSV (set by the tool; used by the SQL engine). */
+  /** Absolute path of the source file (CSV or DuckDB database; set by the tool; used by the SQL engine). */
   path?: string
+  /** Source kind, set by the tool: 'csv' (default) or 'duckdb' (database file). */
+  sourceKind?: 'csv' | 'duckdb'
+  /** Table name when sourceKind === 'duckdb'. */
+  table?: string
   /** Owning session id (set by the tool; used to scope /dsh-chartlab/list per conversation). */
   sessionId?: string
 }
@@ -181,7 +185,7 @@ function makeAccumulator(name: string, type: ColumnType): Accumulator {
 /** ID / code / coordinate-like names that are numeric but not meaningful y axes. */
 const ID_LIKE_NAME = /^(id|fips|zip|zipcode|postal|code|key|idx|index|rowid|geo|geoid|geoid2|lat|lon|long|latitude|longitude|locationid|location_id)$/i
 
-function suggestAxes(columns: Column[]): { x: string; y: string } {
+export function suggestAxes(columns: Column[]): { x: string; y: string } {
   const dateCols = columns.filter((c) => c.type === 'date')
   const numCols = columns.filter((c) => c.type === 'number' && !ID_LIKE_NAME.test(c.name))
   const x = dateCols[0]?.name ?? numCols[0]?.name ?? columns[0]?.name ?? ''
@@ -235,7 +239,7 @@ export function computePreview(
   return lttbPreserve(xs, ys, target)
 }
 
-function sampleHead(
+export function sampleHead(
   data: Record<string, ColumnData>,
   columns: Column[],
   n: number,

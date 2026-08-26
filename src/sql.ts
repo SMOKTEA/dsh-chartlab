@@ -1,5 +1,6 @@
 /**
- * DuckDB-backed SQL execution over a chart's source CSV.
+ * DuckDB-backed SQL execution over a chart's source data (CSV file or DuckDB
+ * database table).
  *
  * The plugin loads duckdb lazily (dynamic import) so the plugin itself boots
  * even if the native module is unavailable; only SQL routes/tools fail then.
@@ -18,6 +19,11 @@ export interface SqlResult {
   data: Record<string, Float64Array | string[]>
   truncated: boolean
 }
+
+/** Where a chart's rows come from, for SQL re-execution. */
+export type SqlSource =
+  | { kind: 'csv'; path: string }
+  | { kind: 'duckdb'; path: string; table: string }
 
 const FORBIDDEN =
   /\b(INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|ATTACH|DETACH|COPY|PRAGMA|CALL|EXPORT|IMPORT|INSTALL|LOAD|SET|TRUNCATE|VACUUM|GRANT|REVOKE)\b/i
@@ -65,51 +71,69 @@ function inferColumnType(values: unknown[]): Column['type'] {
 }
 
 /**
- * Run a SELECT query against the CSV file and return columnar results.
- * The data table is named `dsh_data`.
+ * Convert DuckDB result rows into the columnar shape every chart route uses.
+ * Shared by the SQL route and the DuckDB table data source.
  */
-export async function runSql(csvPath: string, sql: string): Promise<SqlResult> {
+export function rowsToColumnar(rows: Array<Record<string, unknown>>): {
+  columns: Column[]
+  rowCount: number
+  data: Record<string, Float64Array | string[]>
+} {
+  if (rows.length === 0) return { columns: [], rowCount: 0, data: {} }
+  const names = Object.keys(rows[0])
+  const columns: Column[] = []
+  const data: Record<string, Float64Array | string[]> = {}
+  for (const name of names) {
+    const raw = rows.map((r) => r[name])
+    const type = inferColumnType(raw)
+    columns.push({ name, type })
+    if (type === 'string') {
+      data[name] = raw.map((v) => convValue(v, 'string') as string)
+    } else {
+      const arr = new Float64Array(raw.length)
+      for (let i = 0; i < raw.length; i++) arr[i] = convValue(raw[i], type) as number
+      data[name] = arr
+    }
+  }
+  return { columns, rowCount: rows.length, data }
+}
+
+/**
+ * Run a SELECT query against a chart's source and return columnar results.
+ * The source table/CSV is exposed to the query as CTE `dsh_data`.
+ */
+export async function runSql(source: SqlSource, sql: string): Promise<SqlResult> {
   const guard = validateSql(sql)
   if (guard) throw new Error(guard)
 
   const duckdb = (await import('duckdb')).default
-  const db = new duckdb.Database(':memory:')
+  const db =
+    source.kind === 'csv'
+      ? new duckdb.Database(':memory:')
+      : new duckdb.Database(source.path, duckdb.OPEN_READONLY)
   try {
-    const path2 = resolve(csvPath).replace(/\\/g, '/')
-    const src = `read_csv_auto('${path2.replace(/'/g, "''")}')`
+    let base: string
+    if (source.kind === 'csv') {
+      const path2 = resolve(source.path).replace(/\\/g, '/')
+      base = `read_csv_auto('${path2.replace(/'/g, "''")}')`
+    } else {
+      base = `"${source.table.replace(/"/g, '""')}"`
+    }
     const trimmed = sql.trim()
     const isWith = /^\s*WITH\b/i.test(trimmed)
     const body = isWith ? trimmed.replace(/^\s*WITH\b/i, '').trim() : trimmed
     // Always expose the data as CTE `dsh_data`; splice the user's own WITH chain in.
     const query = isWith
-      ? `WITH dsh_data AS (SELECT * FROM ${src}), ${body}`
-      : `WITH dsh_data AS (SELECT * FROM ${src}) ${body}`
+      ? `WITH dsh_data AS (SELECT * FROM ${base}), ${body}`
+      : `WITH dsh_data AS (SELECT * FROM ${base}) ${body}`
 
     const rows: unknown[] = await new Promise((resolveP, reject) => {
       db.all(query, (err: Error | null, r: unknown[]) => (err ? reject(err) : resolveP(r)))
     })
     const truncated = rows.length > RESULT_CAP
     const capped = rows.slice(0, RESULT_CAP)
-    if (capped.length === 0) {
-      return { columns: [], rowCount: 0, data: {}, truncated }
-    }
-
-    const names = Object.keys(capped[0] as Record<string, unknown>)
-    const columns: Column[] = []
-    const data: Record<string, Float64Array | string[]> = {}
-    for (const name of names) {
-      const raw = (capped as Array<Record<string, unknown>>).map((r) => r[name])
-      const type = inferColumnType(raw)
-      columns.push({ name, type })
-      if (type === 'string') {
-        data[name] = raw.map((v) => convValue(v, 'string') as string)
-      } else {
-        const arr = new Float64Array(raw.length)
-        for (let i = 0; i < raw.length; i++) arr[i] = convValue(raw[i], type) as number
-        data[name] = arr
-      }
-    }
-    return { columns, rowCount: capped.length, data, truncated }
+    const { columns, rowCount, data } = rowsToColumnar(capped as Array<Record<string, unknown>>)
+    return { columns, rowCount, data, truncated }
   } finally {
     try {
       db.close()

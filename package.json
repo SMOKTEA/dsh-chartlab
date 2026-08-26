@@ -1,7 +1,7 @@
 {
   "name": "dsh-chartlab",
-  "version": "0.2.0",
-  "description": "CSV → interactive chart lab for DeepSeek Harness: render_chart tool, binary data route, a self-contained interactive chart page, and a Chart tab in the web UI.",
+  "version": "0.0.1",
+  "description": "Data → interactive chart lab for DeepSeek Harness (CSV + DuckDB data sources): render_chart tool, binary data route, a self-contained interactive chart page, and a Chart tab in the web UI.",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
