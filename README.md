@@ -58,7 +58,7 @@ dsh --profile dev
 
 然后在聊天里直接说：
 
-> **用 dsh-chartlab 插件绘制 /path/to/your-data.csv 的图表**
+> **用 dsh-chartlab 插件绘制 `/path/to/your-data.csv` 的图表**
 
 ---
 
