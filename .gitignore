@@ -1,0 +1,14 @@
+# dependencies / build output
+node_modules/
+lib/
+
+# npm pack artifacts
+*.tgz
+.npm-cache/
+
+# test folder (generated datasets are large; excluded from the repo)
+test/
+
+# local logs / scratch
+_dev_host*.log
+*.tmp
