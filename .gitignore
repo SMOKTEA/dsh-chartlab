@@ -12,3 +12,6 @@ test/
 # local logs / scratch
 _dev_host*.log
 *.tmp
+
+# IDE
+.idea/
