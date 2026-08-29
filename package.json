@@ -1,6 +1,6 @@
 {
   "name": "dsh-chartlab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Data → interactive chart lab for DeepSeek Harness: turn local CSV, Excel, or DuckDB data into zoomable, filterable, groupable interactive charts.",
   "type": "module",
   "main": "lib/index.js",
@@ -45,7 +45,7 @@
     "@deepseek-ai/dsh-tools": "^0.1.1-rc.2"
   },
   "dependencies": {
-    "duckdb": "^1.4.4"
+    "@duckdb/node-api": "^1.5.5-r.4"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",

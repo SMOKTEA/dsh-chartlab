@@ -106,11 +106,12 @@ export async function runSql(source: SqlSource, sql: string): Promise<SqlResult>
   const guard = validateSql(sql)
   if (guard) throw new Error(guard)
 
-  const duckdb = (await import('duckdb')).default
-  const db =
+  const { DuckDBInstance } = await import('@duckdb/node-api')
+  const instance =
     source.kind === 'csv'
-      ? new duckdb.Database(':memory:')
-      : new duckdb.Database(source.path, duckdb.OPEN_READONLY)
+      ? await DuckDBInstance.create(':memory:')
+      : await DuckDBInstance.create(source.path, { access_mode: 'READ_ONLY' })
+  const conn = await instance.connect()
   try {
     let base: string
     if (source.kind === 'csv') {
@@ -127,16 +128,20 @@ export async function runSql(source: SqlSource, sql: string): Promise<SqlResult>
       ? `WITH dsh_data AS (SELECT * FROM ${base}), ${body}`
       : `WITH dsh_data AS (SELECT * FROM ${base}) ${body}`
 
-    const rows: unknown[] = await new Promise((resolveP, reject) => {
-      db.all(query, (err: Error | null, r: unknown[]) => (err ? reject(err) : resolveP(r)))
-    })
+    const reader = await conn.runAndReadAll(query)
+    const rows = reader.getRowObjectsJS() as Array<Record<string, unknown>>
     const truncated = rows.length > RESULT_CAP
     const capped = rows.slice(0, RESULT_CAP)
-    const { columns, rowCount, data } = rowsToColumnar(capped as Array<Record<string, unknown>>)
+    const { columns, rowCount, data } = rowsToColumnar(capped)
     return { columns, rowCount, data, truncated }
   } finally {
     try {
-      db.close()
+      conn.disconnectSync()
+    } catch {
+      /* ignore */
+    }
+    try {
+      instance.closeSync()
     } catch {
       /* ignore */
     }
