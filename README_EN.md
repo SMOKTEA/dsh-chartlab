@@ -26,7 +26,9 @@ One line: **let the agent turn your data into an interactive chart.**
 - **Three data sources** — local data files (`.csv` / `.xlsx` / `.xls`), or a table inside a DuckDB database (`.duckdb` / `.ddb`). Just say it in chat.
 - **Supports millions of rows** — data stays on the host; the chart fetches only the visible window, so zooming and panning stay smooth even at millions of rows.
 - **Full chart workbench** — line / scatter; box zoom, wheel zoom, drag-to-pan, hover readouts.
-- **Filter · Group · SQL** — conditional filters, group rows by a column into multiple lines, or write SQL directly.
+- **Filter** — conditional filters (equal / not equal / range / multi-select, with date ranges).
+- **Group** — one line per distinct value of a column.
+- **SQL** — write SQL directly.
 - **Native look & feel** — follows DSH's language (zh / en) and theme (dark / light) automatically, no reload needed.
 - **Per-session isolation** — each conversation sees only its own charts; deleted sessions are cleaned up.
 
@@ -43,7 +45,8 @@ One line: **let the agent turn your data into an interactive chart.**
 | Data sources | Local data files (`.csv` / `.xlsx` / `.xls`), DuckDB database tables (`.duckdb` / `.ddb`); the DuckDB table name is optional and defaults to the first table |
 | Chart types | Line, scatter |
 | Interaction | Box zoom, wheel zoom, drag-to-pan, hover readouts, screenshot download |
-| Filter · Group | Conditional filters (equal / not equal / range / multi-select, with date ranges); group rows by a column into multiple lines |
+| Filter | Conditional filters (equal / not equal / range / multi-select, with date ranges) |
+| Group | Group by a column — one line per distinct value |
 | SQL | Write SQL queries directly in the chart; paste multi-line SQL |
 | Theme & language | Follows DSH dark / light theme and zh / en language |
 | Session isolation | Each conversation is independent; deleted sessions clean up their cache |
